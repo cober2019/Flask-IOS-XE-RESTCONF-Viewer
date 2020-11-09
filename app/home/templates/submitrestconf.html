@@ -1,0 +1,32 @@
+{% if leafs %}
+    <h1>Lists for Container: {{ container }}</h1>
+    <br/>
+    {% for i in leafs %}
+        <span><input value="{{ i }}" class="btn btn-primary btn-round-xs" type="button" onclick="getLeaf(this.value)"></span>
+    {% endfor %}
+    <pre>{{ object_list }}</pre>
+
+{% else %}
+
+    <h1>No Lists for this Container</h1>
+    <br/>
+    {% for i in leafs %}
+        <span><input value="{{ i }}" class="btn btn-primary btn-round-xs" type="button" onclick="getLeaf(this.value)"></span>
+    {% endfor %}
+    <pre>{{ object_list }}</pre>
+
+{% endif %}
+<script>
+
+    function getLeaf(val){
+      $.ajax({
+      url: '/config',
+      type: 'POST',
+      data: {'leaf': val},
+      success: function(response){
+       $('#response').html(response.data);
+      },
+     });
+    }
+
+</script>

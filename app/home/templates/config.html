@@ -1,0 +1,93 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+  <style type="text/css">
+        .btn-round-lg{
+        border-radius: 22.5px;
+        }
+        .btn-round{
+        border-radius: 17px;
+        }
+        .btn-round-sm{
+        border-radius: 15px;
+        }
+        .btn-round-xs{
+        border-radius: 11px;
+        padding-left: 10px;
+        padding-right: 10px;
+        margin-bottom: 5px;
+        }
+  </style>
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="tab-pane fade show active" id="restconf">
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col" >
+             <h1>Containers for RESTCONF Module: Cisco-IOS-XE-native:native</h1>
+             <br/>
+              {% for i in leafs %}
+                <span><input value="{{ i }}" class="btn btn-primary btn-round-xs" type="button" onclick="getContainer(this.value)"></span>
+              {% endfor %}
+          </div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <span class="counter pull-right"></span>
+        <table class="table align-items-center table-flush results">
+          <tbody id="resttTable">
+            <tr>
+                <td><div id='response' style="font-size: 20px"></div></td>
+            </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="container" style="min-height:100% width:80%">
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true"></span></button>
+          {{message}}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+</div>
+
+<script>
+
+    function getContainer(val){
+      $.ajax({
+      url: '/config',
+      type: 'POST',
+      data: {'container': val},
+      success: function(response){
+       $('#response').html(response.data);
+      },
+     });
+    }
+
+</script>
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}
