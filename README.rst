@@ -11,3 +11,4 @@ RESTCONF Viewer
 Description:
 _______
 
+    View configuration using RESCONF protocol
