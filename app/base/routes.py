@@ -74,7 +74,7 @@ def get_config(module):
         flash("An Error Occured, Check IP")
         return redirect(url_for('base_blueprint.login'))
     else:
-        return render_template('config.html', restconf=get_restconf[0], lists=get_restconf[1], json=get_restconf[2])
+        return render_template('config.html', restconf=get_restconf[0], lists=get_restconf[1], json=get_restconf[2], module=module)
 
 
 @blueprint.route('/config', methods=['POST'])
