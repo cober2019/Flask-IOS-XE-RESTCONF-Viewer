@@ -5,7 +5,6 @@
     {% for i in lists %}
         <span><input value="{{ i }}" class="btn btn-primary btn-round-xs" type="button" onclick="getLeaf(this.value)"></span>
     {% endfor %}
-    {{ leafs }}
     <pre>{{ object_list }}</pre>
 
 {% else %}
@@ -17,7 +16,6 @@
     {% endfor %}
     <pre>{{ object_list }}</pre>
 
-
 {% endif %}
 <script>
 
@@ -25,7 +23,7 @@
       $.ajax({
       url: '/config',
       type: 'POST',
-      data: {'lists': val},
+      data: {'leaf': val},
       success: function(response){
        $('#response').html(response.data);
       },

@@ -1,0 +1,59 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} Dashboard {% endblock title %}
+
+{% block stylesheets %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col"></div>
+          <div class="col">
+            <form id="moduleForm" method="post">
+              <h2 class="form-signin-heading" style="text-align:center">YANG Model</h2>
+               <div class="input-group mb-3">
+                  <input type="text" class="form-control" name="module">
+               </div>
+            </form>
+          </div>
+          <div class="col"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function(){
+    $('#moduleForm').submit(function(){
+     var val = $('#moduleForm').val();
+
+     $.ajax({
+      url: '/custom_query',
+      type: 'POST',
+      data: $('form').serialize(),
+      success: function(response){
+       $('#response').html(response.data);
+      },
+     });
+    });
+  });
+ </script>
+
+
+
+
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+{% endblock javascripts %}
