@@ -130,7 +130,7 @@ def get_custom_config():
 
 @blueprint.route('/custom_query')
 def custom_query():
-    return render_template('custom_query.html')
+    return render_template('custom_query.html', device=device)
 
 
 @login_manager.unauthorized_handler
