@@ -67,7 +67,10 @@ def get_config(module):
     if get_restconf == 'Access Denied':
         flash("Login Failed")
         return redirect(url_for('base_blueprint.login'))
-    elif get_restconf[1] == 404:
+    elif get_restconf == 401:
+        flash("401: Verify Credentials")
+        return redirect(url_for('base_blueprint.login'))
+    elif get_restconf == 404:
         flash("404: Verify that RESTCONF is enabled")
         return redirect(url_for('base_blueprint.login'))
     elif get_restconf[1] == 'JSONError':
