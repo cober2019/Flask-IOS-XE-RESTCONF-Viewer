@@ -125,7 +125,7 @@ def get_custom_config():
     if get_restconf[0] == 404:
         return render_template('json_error.html', restconf=get_restconf[1])
     else:
-        return render_template('config.html', restconf=get_restconf[0], lists=get_restconf[1], json=get_restconf[2])
+        return render_template('config.html', restconf=get_restconf[0], lists=get_restconf[1], json=get_restconf[2], module=module)
 
 
 @blueprint.route('/custom_query')
