@@ -11,4 +11,18 @@ RESTCONF Viewer
 Description:
 _______
 
-    View configuration using RESCONF protocol
+    View configuration using RESTCONF protocol. Available Modules:
+    
+        + ietf-interfaces:interfaces
+        + Cisco-IOS-XE-native:native
+        + ietf-interfaces:interfaces-state
+        + Custom Module allow you to enter ANY Module. compatibility required for device
+        
+Usage:
+_______
+
+    SideNav - Using side navigation for static modules. Once clicked, keys/lists will appear as buttons. Click a button to render configurationsfor keys/lists
+    SideNav (Custom Query) - Click side navigation button. The next screen will have a URI and an input box. Insert module in the box, press enter. Navigate
+    config with buttons.
+    
+    
