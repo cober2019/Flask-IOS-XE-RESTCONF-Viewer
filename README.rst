@@ -16,7 +16,7 @@ _______
         + ietf-interfaces:interfaces
         + Cisco-IOS-XE-native:native
         + ietf-interfaces:interfaces-state
-        + Custom Module allow you to enter ANY Module. compatibility required for device
+        + Custom Module allows you to enter ANY Module. Compatibility required for device
         
 Usage:
 _______
