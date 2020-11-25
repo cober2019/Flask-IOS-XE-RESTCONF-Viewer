@@ -31,9 +31,12 @@ def get_config_restconf(username, password, device, module, rest_obj):
         if response.status_code == 401:
             return response.status_code
         elif response.status_code != 404:
-            config = json.loads(response.text)
-            if config.get('errors', {}).get('error', {})[0].get('error-tag', {}) == 'access-denied':
-                return "Access Denied"
+            try:
+                config = json.loads(response.text)
+                if config.get('errors', {}).get('error', {})[0].get('error-tag', {}) == 'access-denied':
+                    return "Access Denied"
+            except json.JSONDecodeError:
+                return 'An Error Occured'
         else:
             format_res = validate_json(response)
             return response.status_code, format_res
