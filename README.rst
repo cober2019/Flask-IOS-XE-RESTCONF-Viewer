@@ -1,6 +1,10 @@
 
+.. image:: https://travis-ci.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer.svg?branch=main
+    :target: https://travis-ci.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer
 .. image:: https://img.shields.io/badge/Fugi_IOS_XE_v16.09.04-passing-green
+    :target: -
 .. image:: https://img.shields.io/badge/Fugi_IOS_XE_v16.07.02-passing-green
+    :target: -
     
 
 RESTCONF Viewer
