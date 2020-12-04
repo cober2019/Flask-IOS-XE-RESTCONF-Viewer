@@ -7,11 +7,11 @@
     :target: -
     
 
-RESTCONF Viewer
+**RESTCONF Viewer**
 ======
 
 
-Description:
+**Description:**
 _______
 
     View configuration using RESTCONF protocol. Available Modules:
@@ -21,10 +21,33 @@ _______
         + ietf-interfaces:interfaces-state
         + Custom Module allows you to enter ANY Module. Compatibility required for device
         
-Usage:
+**Usage:
 _______
 
     + SideNav - Using side navigation for static modules. Once clicked, keys/lists will appear as buttons. Click a button to render configurationsfor keys/lists.
     + SideNav (Custom Query) - Click side navigation button. The next screen will have a URI and an input box. Insert module in the box, press enter. Navigate config with buttons.
+    
+
+
+**Main Page**
+
+.. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/Main.PNG
+
+**Main page when value selected**
+
+.. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/MainSelected.PNG
+
+**Custom Query**
+
+.. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/CustomQuery.PNG
+
+**Custom Submit (Can produce different outputs)**
+
+.. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/QuerySubmit.PNG
+
+
+
+
+
     
     
