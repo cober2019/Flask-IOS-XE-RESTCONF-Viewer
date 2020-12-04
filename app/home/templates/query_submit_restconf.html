@@ -6,11 +6,7 @@
       <div class="card-header border-0">
         <div class="row align-items-center">
           <div class="col">
-              {% if container != None %}
-                <h1 class="text-center">Lists for this Container: {{ container }}</h1>
-              {%else%}
-                <h1 class="text-center">No Lists for {{ current_list}}</h1>
-              {%endif%}
+             <h1 class="text-center">Lists for this Container: {{ container }}</h1>
              <br/>
               {% if list != None%}
                   {% for i in lists %}
@@ -26,7 +22,7 @@
           <tbody id="resttTable">
             <tr>
                 <td>
-                    <pre style="font-size: 15px">{{ object_list }}</pre>
+                    <pre style="font-size: 20px">{{ object_list }}</pre>
                 </td>
             </tr>
         </table>
@@ -43,7 +39,7 @@
           <tbody>
             <tr>
                 <td>
-                    <pre style="font-size: 15px">{{ object_list }}</pre>
+                    <pre style="font-size: 20px">{{ object_list }}</pre>
                 </td>
             </tr>
         </table>
@@ -57,7 +53,7 @@
       <div class="card-header border-0">
         <div class="row align-items-center">
           <div class="col">
-             <h1 class="text-center">Configuration</h1>
+             <h1 class="text-center">No Lists for this Container</h1>
              <br/>
               {% if list != None%}
                   {% for i in lists %}
@@ -73,7 +69,7 @@
           <tbody>
             <tr>
                 <td>
-                    <pre style="font-size: 15px">{{ json }}</pre>
+                    <pre style="font-size: 20px">{{ json }}</pre>
                 </td>
             </tr>
         </table>

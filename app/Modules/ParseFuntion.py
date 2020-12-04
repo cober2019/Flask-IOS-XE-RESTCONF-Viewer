@@ -17,10 +17,10 @@ def validate_json(response):
 def get_config_restconf(username, password, device, module, rest_obj):
     """Requested Initial request for config via REST"""
 
-    config = None
+    no_config = []
+    leafs = []
     response = None
     rest_obj.module = module
-
     warnings.filterwarnings('ignore', message='Unverified HTTPS request')
     uri = f"https://{device}/restconf/data/{module}"
     headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
@@ -30,24 +30,27 @@ def get_config_restconf(username, password, device, module, rest_obj):
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
         if response.status_code == 401:
             return response.status_code
-        elif response.status_code != 404:
-            try:
-                config = json.loads(response.text)
-                if config.get('errors', {}).get('error', {})[0].get('error-tag', {}) == 'access-denied':
-                    return "Access Denied"
-            except json.JSONDecodeError:
-                return 'An Error Occured'
         else:
-            format_res = validate_json(response)
-            return response.status_code, format_res
+
+            config = json.loads(response.text)
+            get_keys = dict.fromkeys(json.loads(response.text))
+            parent_key = list(get_keys.keys())[0]
+            format_response = validate_json(response)
+
+            try:
+                leafs = [k for k in config.get(f'{parent_key}').keys()]
+            except AttributeError:
+                pass
+
+            return config, leafs, format_response
 
     except requests.exceptions.ConnectionError:
         return "Access Denied"
-    except KeyError:
-        format_res = validate_json(response)
-        leafs = [k for k in config.get(f'{module}').keys()]
+    except json.JSONDecodeError:
+        # Sometime you can get 200 OK, but a decoder error
+        no_config.append(response.status_code)
 
-        return config, leafs, format_res
+        return response.status_code, leafs, response.text
 
 
 class ApiCalls:
@@ -96,6 +99,29 @@ class ApiCalls:
 
         # Build uri based of button click which provides the leaf value
         uri = f"https://{device}/restconf/data/{self.module}/{self.container}/{self.lists}"
+        headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
+        response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
+        config = json.loads(response.text)
+        format_res = json.dumps(response.json(), sort_keys=True, indent=4)
+
+        try:
+            leafs = [k for k in config.get(f'{lists}').keys()]
+            self.config_keys = leafs
+        except AttributeError:
+            leafs = ''
+            self.config_keys = leafs
+
+        return format_res, leafs, self.config_keys
+
+    def request_custom_lists(self, username, password, device, lists):
+        """Get request leaf from config"""
+
+        self.lists = lists
+
+        warnings.filterwarnings('ignore', message='Unverified HTTPS request')
+
+        # Build uri based of button click which provides the leaf value
+        uri = f"https://{device}/restconf/data/{self.module}/{self.lists}"
         headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
         config = json.loads(response.text)

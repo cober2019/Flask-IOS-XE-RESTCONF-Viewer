@@ -1,6 +1,6 @@
 {% extends 'layouts/base.html' %}
 
-{% block title %} IOS-XE Viewer {% endblock title %}
+{% block title %}RESTCONF Viewer{% endblock title %}
 
 {% block stylesheets %}
 
@@ -30,46 +30,83 @@
 
 <div class="row">
   <div class="col-xl-12">
-    <div class="card">
-      <div class="card-header border-0">
-        <div class="row align-items-center">
-          <div class="col">
-             <h1>Containers for RESTCONF Module: {{ module }}</h1>
-             <br/>
-              {% for i in lists %}
-                <span><input value="{{ i }}" class="btn btn-primary btn-round-xs" type="button" onclick="getContainer(this.value)"></span>
-              {% endfor %}
+    <div class="row">
+      <div class="col-xl-6">
+          <div class="card">
+             <div class="card-header border-0">
+               <div class="row align-items-center">
+                   <div class="col">
+                     <h1 class="text-center">Containers for RESTCONF Module: {{ module }}</h1>
+                     <br/>
+                      {% if lists != None %}
+                            <span><input value="Full Configuration" name="{{ module }}" class="btn btn-warning btn-round-xs" type="button" onclick="getModule(this.name)" ></span>
+                          {% for i in lists %}
+                            <span><input value="{{ i }}" class="btn btn-primary btn-round-xs" type="button" onclick="getContainer(this.value)"></span>
+                          {% endfor %}
+                      {%else%}
+                        <div class="row">
+                            <div class="col">
+                                <pre class="text-center" style="font-size: 20px">{{json}}</pre>
+                            </div>
+                        </div>
+                      {%endif%}
+                       <div class="table-responsive">
+                        <span class="counter pull-right"></span>
+                        <table class="table align-items-center table-flush results" id="configTable">
+                          <tbody id="resttTable">
+                            <tr>
+                                <td>
+                                    <pre style="font-size: 15px">{{ json }}</pre>
+                                </td>
+                            </tr>
+                        </table>
+                      </div>
+                  </div>
+               </div>
+             </div>
           </div>
         </div>
-      </div>
-      <div class="table-responsive">
-        <span class="counter pull-right"></span>
-        <table class="table align-items-center table-flush results">
-          <tbody id="resttTable">
-            <tr>
-                <td><div id='response' style="font-size: 20px"></div></td>
-            </tr>
-        </table>
+        <div class="col-xl-6">
+          <div class="card">
+            <div id='response' style="font-size: 15px"></div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
+
 <script>
 
-    function getContainer(val){
-      $.ajax({
-      url: '/config',
-      type: 'POST',
-      data: {'container': val},
-      success: function(response){
-       $('#response').html(response.data);
-      },
-     });
-    }
+function getContainer(val){
+ $.ajax({
+  url: '/config',
+  type: 'POST',
+  data: {'container': val},
+  success: function(response) {
+      $('#response').html(response.data);
+  },
+ });
+}
+
 
 </script>
 
+<script>
+
+function getModule(val){
+ $.ajax({
+  url: '/config',
+  type: 'POST',
+  data: {'full_config': val},
+  success: function(response) {
+      $('#response').html(response.data);
+  },
+ });
+}
+
+
+</script>
  {% endblock content %}
 
 {% block javascripts %}

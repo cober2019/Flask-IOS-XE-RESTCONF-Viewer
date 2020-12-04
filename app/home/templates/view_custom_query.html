@@ -1,0 +1,145 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} RESTCONF Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<style type="text/css">
+    .btn-round-lg{
+    border-radius: 22.5px;
+    }
+    .btn-round{
+    border-radius: 17px;
+    }
+    .btn-round-sm{
+    border-radius: 15px;
+    }
+    .btn-round-xs{
+    border-radius: 11px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: 5px;
+    }
+</style>
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+{% if lists %}
+<div class="row">
+  <div class="col-xl-12">
+    <div class="row">
+      <div class="col-xl-6">
+          <div class="card">
+             <div class="card-header border-0">
+               <div class="row align-items-center">
+                   <div class="col">
+                        <h1 class="text-center">Configuration</h1>
+                            <br/>
+                      {% if list != None%}
+                          {% for i in lists %}
+                            <span><input value="{{ i }}" class="btn btn-primary btn-round-xs" type="button" onclick="getContainer(this.value)"></span>
+                          {% endfor %}
+                      {%endif%}
+                      <div class="table-responsive">
+                        <span class="counter pull-right"></span>
+                        <table class="table align-items-center table-flush results" id="configTable">
+                          <tbody id="resttTable">
+                            <tr>
+                                <td>
+                                    <pre style="font-size: 15px">{{ json }}</pre>
+                                </td>
+                            </tr>
+                        </table>
+                      </div>
+                   </div>
+               </div>
+             </div>
+          </div>
+      </div>
+      <div class="col-xl-6">
+        <div class="card">
+            <div id='response' style="font-size: 15px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% else %}
+
+<div class="container">
+    <div class="row">
+      <div class="col-xl-12">
+          <div class="card">
+             <div class="card-header border-0">
+               <div class="row align-items-center">
+                   <div class="col">
+                        <h1>Configuration:</h1>
+                            <br/>
+                      {% if list != None%}
+                          {% for i in lists %}
+                            <span><input value="{{ i }}" class="btn btn-primary btn-round-xs" type="button" onclick="getContainer(this.value)"></span>
+                          {% endfor %}
+                      {%endif%}
+                      <div class="table-responsive">
+                        <span class="counter pull-right"></span>
+                        <table class="table align-items-center table-flush results">
+                          <tbody>
+                            <tr>
+                                <td>
+                                    <pre style="font-size: 20px">{{ json }}</pre>
+                                </td>
+                            </tr>
+                        </table>
+                      </div>
+                   </div>
+               </div>
+             </div>
+          </div>
+      </div>
+    </div>
+</div>
+
+{%endif%}
+<script>
+
+function getContainer(val){
+ $.ajax({
+  url: '/query_submit_leaf',
+  type: 'POST',
+  data: {'lists': val},
+  success: function(response) {
+      $('#response').html(response.data);
+  },
+ });
+}
+
+
+</script>
+
+<script>
+
+function getModule(val){
+ $.ajax({
+  url: '/custom_query',
+  type: 'POST',
+  data: {'full_config': val},
+  success: function(response) {
+      $('#response').html(response.data);
+  },
+ });
+}
+
+
+</script>
+
+{% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}

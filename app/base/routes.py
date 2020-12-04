@@ -13,11 +13,13 @@ from app.base.forms import LoginForm
 from app.base.models import User
 from app.base.util import verify_pass
 import app.Modules.ParseFuntion as GetRest
+import string
 
 device = None
 username = None
 password = None
 rest_call = None
+keys = []
 
 
 @blueprint.route('/')
@@ -61,74 +63,61 @@ def get_config(module):
     global rest_call
 
     rest_call = GetRest.ApiCalls()
-    get_restconf = GetRest.get_config_restconf(username, password, device, module=module, rest_obj=rest_call)
+    response = GetRest.get_config_restconf(username, password, device, module=module, rest_obj=rest_call)
 
-    # Checks for valid IP, credentials, and check if RESTCONF is enabled
-    if get_restconf == 'Access Denied':
+    if response == 'Access Denied':
         flash("Login Failed")
         return redirect(url_for('base_blueprint.login'))
-    elif get_restconf == 401:
+    elif response == 401:
         flash("401: Verify Credentials")
         return redirect(url_for('base_blueprint.login'))
-    elif get_restconf == 404:
+    elif response == 404:
         flash("404: Verify that RESTCONF is enabled")
         return redirect(url_for('base_blueprint.login'))
-    elif get_restconf[1] == 'JSONError':
+    elif response[1] == 'JSONError':
         flash("An Error Occured, Check IP")
         return redirect(url_for('base_blueprint.login'))
     else:
-        return render_template('config.html', restconf=get_restconf[0], lists=get_restconf[1], json=get_restconf[2], module=module)
+        if response[0] == 404:
+            return render_template('config.html', restconf=response[0], json=response[1], lists=None)
+        else:
+            return render_template('config.html', restconf=response[0], lists=response[1], json=response[2],
+                                   module=module)
 
 
 @blueprint.route('/config', methods=['POST'])
 def submit_leaf():
     """Submit requested configuration for proccessing"""
 
-    if request.form.get("container"):
-        # Get data from the POST message, call funtion and place data into the called funtions URI
-        container = request.form.get("container")
-        get_restconf = rest_call.request_container(username, password, device, container)
+    global keys
+    container = request.form.get("container")
 
-        # Render template with variables, that template/html is return to JS funtions and printed in HTML
-        return jsonify(
-            {'data': render_template('submitrestconf.html', object_list=get_restconf[0], lists=get_restconf[1],
-                                     container=get_restconf[2])})
+    if request.form.get("container"):
+
+        response = rest_call.request_container(username, password, device, request.form.get("container"))
+        keys = response[1]
+
+        return jsonify( {'data': render_template('submitrestconf.html', object_list=response[0], lists=response[1], container=response[2])})
 
     elif request.form.get("lists"):
 
-        lists = request.form.get("lists")
-        get_restconf = rest_call.request_lists(username, password, device, lists)
+        response = rest_call.request_lists(username, password, device, request.form.get("lists"))
 
-        return jsonify({'data': render_template('submitrestconf.html', object_list=get_restconf[0],
-                                                leafs=get_restconf[1], lists=get_restconf[2])})
-
-    elif request.form.get("leaf"):
-
-        lists = request.form.get("lists")
-        get_restconf = rest_call.request_leaf(username, password, device, lists)
-
-        return jsonify(
-            {'data': render_template('submit_leaf.html', object_list=get_restconf[0], lists=get_restconf[1])})
+        return jsonify({'data': render_template('submitrestconf.html', container=container, object_list=response[0],
+                                                leafs=response[1], config=response[2], lists=keys,
+                                                current_list=request.form.get("lists"))})
 
     elif request.form.get("module"):
 
-        module = request.form.get("module")
-        get_restconf = GetRest.get_config_restconf(username, password, device, module, rest_call)
+        response = GetRest.get_config_restconf(username, password, device, request.form.get("module"), rest_call)
 
-        return jsonify({'data': render_template('config.html', restconf=get_restconf[0], lists=get_restconf[1],
-                                                json=get_restconf[2])})
+        return jsonify({'data': render_template('config.html', restconf=response[0], lists=response[1], json=response[2])})
 
+    elif request.form.get("full_config"):
 
-@blueprint.route('/custom_query', methods=['POST'])
-def get_custom_config():
-    """Gets configuration via YANG model"""
+        response = GetRest.get_config_restconf(username, password, device, module=request.form.get("full_config"), rest_obj=rest_call)
 
-    module = request.form.get("module")
-    get_restconf = GetRest.get_config_restconf(username, password, device, module=module, rest_obj=rest_call)
-    if get_restconf[0] == 404:
-        return render_template('json_error.html', restconf=get_restconf[1])
-    else:
-        return render_template('config.html', restconf=get_restconf[0], lists=get_restconf[1], json=get_restconf[2], module=module)
+        return jsonify({'data': render_template('submitrestconf.html', response_code=response[0], object_list=response[2])})
 
 
 @blueprint.route('/custom_query')
@@ -136,21 +125,68 @@ def custom_query():
     return render_template('custom_query.html', device=device)
 
 
-@login_manager.unauthorized_handler
-def unauthorized_handler():
-    return render_template('page-403.html'), 403
+@blueprint.route('/custom_query', methods=['POST'])
+def get_custom_config():
+    """Gets configuration via YANG model"""
+
+    global keys
+
+    response = GetRest.get_config_restconf(username, password, device, module=request.form.get("query"),
+                                           rest_obj=rest_call)
+
+    try:
+        keys = response[1]
+    except (IndexError, TypeError):
+        keys = []
+
+    if response[0] == '404 Not Found' or response[0] == 404:
+        return render_template('json_error.html', response='404 Not Found')
+    elif response[0] == 204:
+        return render_template('no_content.html', response='204 No Content')
+    elif response[0] == 200:
+        # Returned OK response but couldn't decode JSON
+        return render_template('view_custom_query.html', json=response[2], lists=keys)
+
+    # Returned valid response and JSON conversion was sucessful
+    if request.form.get("query").rfind("/") == -1:
+        if keys[0] == 'error':
+            return render_template('json_error.html', response='404 Not Found')
+        else:
+            return redirect(url_for('base_blueprint.get_config', module=request.form.get("query")))
+    elif request.form.get("query").rfind("?") == -1:
+        if keys[0] == 'error':
+            return render_template('json_error.html', response='404 Not Found')
+        else:
+            return render_template('view_custom_query.html', json=response[2], lists=keys)
+    else:
+        return render_template('view_custom_query.html', json=response[2], lists=keys)
 
 
-@blueprint.errorhandler(403)
-def access_forbidden(error):
-    return render_template('page-403.html'), 403
+@blueprint.route('/query_submit_leaf', methods=['POST'])
+def submit_custom_leaf():
+    """Submit requested configuration for proccessing"""
 
+    if request.form.get("container"):
 
-@blueprint.errorhandler(404)
-def not_found_error(error):
-    return render_template('page-404.html'), 404
+        response = rest_call.request_container(username, password, device, request.form.get("container"))
 
+        return jsonify({'data': render_template('custom_config.html', object_list=response[0], lists=keys, container=response[2])})
 
-@blueprint.errorhandler(500)
-def internal_error(error):
-    return render_template('page-500.html'), 500
+    elif request.form.get("lists"):
+
+        response = rest_call.request_custom_lists(username, password, device, request.form.get("lists"))
+
+        return jsonify({'data': render_template('query_submit_leaf.html', container=keys, object_list=response[0],
+                                                leafs=response[1], config=response[2])})
+
+    elif request.form.get("module"):
+
+        response = GetRest.get_config_restconf(username, password, device, request.form.get("module"), rest_call)
+
+        return jsonify({'data': render_template('config.html', restconf=response[0], lists=response[1], json=response[2])})
+
+    elif request.form.get("full_config"):
+
+        response = GetRest.get_config_restconf(username, password, device, module=request.form.get("full_config"), rest_obj=rest_call)
+
+        return jsonify({'data': render_template('submitrestconf.html', response_code=response[0], object_list=response[2])})
