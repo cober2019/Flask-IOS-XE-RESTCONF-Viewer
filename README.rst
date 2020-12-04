@@ -29,7 +29,8 @@ ___________
     + SideNav - Using side navigation for static modules. Once clicked, keys/lists will appear as buttons. Click a button to render configurationsfor keys/lists.
     + SideNav (Custom Query) - Click side navigation button. The next screen will have a URI and an input box. Insert module in the box, press enter. Navigate config with buttons.
     
-
+**Outputs**
+____________
 
 **Main Page/Index**
 
