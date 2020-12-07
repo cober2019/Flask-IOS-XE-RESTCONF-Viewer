@@ -13,7 +13,6 @@ from app.base.forms import LoginForm
 from app.base.models import User
 from app.base.util import verify_pass
 import app.Modules.ParseFuntion as GetRest
-import app.Modules.FileCommands as AccessFiles
 import string
 
 device = None
@@ -45,7 +44,6 @@ def login():
         else:
             port = request.form['port']
 
-        print(request.form['port'])
         if device and username and password:
             return redirect(url_for('base_blueprint.get_config', module='Cisco-IOS-XE-native:native'))
 
@@ -199,9 +197,3 @@ def submit_custom_leaf():
 
         return jsonify({'data': render_template('submitrestconf.html', response_code=response[0], object_list=response[2])})
 
-
-@blueprint.route('/custom_query')
-def pyang():
-
-    test = AccessFiles
-    return render_template('custom_query.html', device=device)
