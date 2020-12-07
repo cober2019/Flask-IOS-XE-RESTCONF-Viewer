@@ -13,11 +13,13 @@ from app.base.forms import LoginForm
 from app.base.models import User
 from app.base.util import verify_pass
 import app.Modules.ParseFuntion as GetRest
+import app.Modules.FileCommands as AccessFiles
 import string
 
 device = None
 username = None
 password = None
+port = None
 rest_call = None
 keys = []
 
@@ -29,7 +31,7 @@ def route_default():
 
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
-    global device, username, password
+    global device, username, password, port
 
     login_form = LoginForm(request.form)
     if 'login' in request.form:
@@ -38,6 +40,12 @@ def login():
         username = request.form['username']
         password = request.form['password']
 
+        if not request.form['port']:
+            port = 443
+        else:
+            port = request.form['port']
+
+        print(request.form['port'])
         if device and username and password:
             return redirect(url_for('base_blueprint.get_config', module='Cisco-IOS-XE-native:native'))
 
@@ -63,7 +71,7 @@ def get_config(module):
     global rest_call
 
     rest_call = GetRest.ApiCalls()
-    response = GetRest.get_config_restconf(username, password, device, module=module, rest_obj=rest_call)
+    response = GetRest.get_config_restconf(username, password, device, port, module=module, rest_obj=rest_call)
 
     if response == 'Access Denied':
         flash("Login Failed")
@@ -190,3 +198,10 @@ def submit_custom_leaf():
         response = GetRest.get_config_restconf(username, password, device, module=request.form.get("full_config"), rest_obj=rest_call)
 
         return jsonify({'data': render_template('submitrestconf.html', response_code=response[0], object_list=response[2])})
+
+
+@blueprint.route('/custom_query')
+def pyang():
+
+    test = AccessFiles
+    return render_template('custom_query.html', device=device)
