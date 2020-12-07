@@ -38,8 +38,9 @@ ___________
 **Outputs:**
 ____________
 
-**If you dont have access to IOS-XE devices please use Devnet: https://developer.cisco.com/site/standard-network-devices/ (Credenitals Provided In Sandbox)**
-----------------------------------------------------------------------
+**Devenet:**
+
+If you dont have access to IOS-XE devices please use Devnet: https://developer.cisco.com/site/standard-network-devices/ (Credenitals Provided In Sandbox)
     
 .. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/Devnet.PNG
 
