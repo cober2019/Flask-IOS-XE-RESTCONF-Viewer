@@ -8,7 +8,7 @@
 .. image:: https://img.shields.io/badge/RESTCONF-required-blue
     :target: -
 .. image:: https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg
-    :target: https://developer.cisco.com/codeexchange/github/repo/cober2019/IOS-XE-Ops
+    :target: https://developer.cisco.com/codeexchange/github/repo/cober2019/Flask-IOS-XE-RESTCONF-Viewer
 
 
 **RESTCONF Viewer**
