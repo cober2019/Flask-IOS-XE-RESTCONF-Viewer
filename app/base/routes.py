@@ -21,6 +21,7 @@ device = None
 username = None
 password = None
 rest_call = None
+port = None
 keys = []
 
 
@@ -31,7 +32,7 @@ def route_default():
 
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
-    global device, username, password
+    global device, username, password, port
 
     login_form = LoginForm(request.form)
     if 'login' in request.form:
@@ -39,6 +40,10 @@ def login():
         device = request.form['device']
         username = request.form['username']
         password = request.form['password']
+        port = request.form['port']
+        
+        if not port:
+            port = 443
 
         if device and username and password:
             return redirect(url_for('base_blueprint.get_config', module='Cisco-IOS-XE-native:native'))
@@ -65,7 +70,7 @@ def get_config(module):
     global rest_call
 
     rest_call = GetRest.ApiCalls()
-    response = GetRest.get_config_restconf(username, password, device, rest_obj=rest_call, module=module)
+    response = GetRest.get_config_restconf(username, password, device, port, rest_obj=rest_call, module=module)
 
     if response == 'Access Denied':
         flash("Login Failed")
@@ -96,14 +101,14 @@ def submit_leaf():
 
     if request.form.get("container"):
 
-        response = rest_call.request_container(username, password, device, request.form.get("container"))
+        response = rest_call.request_container(username, password, device, request.form.get("container"), port)
         keys = response[1]
 
         return jsonify( {'data': render_template('submitrestconf.html', object_list=response[0], lists=response[1], container=response[2])})
 
     elif request.form.get("lists"):
 
-        response = rest_call.request_lists(username, password, device, request.form.get("lists"))
+        response = rest_call.request_lists(username, password, device, request.form.get("lists"), port)
 
         return jsonify({'data': render_template('submitrestconf.html', container=container, object_list=response[0],
                                                 leafs=response[1], config=response[2], lists=keys,
@@ -111,13 +116,13 @@ def submit_leaf():
 
     elif request.form.get("module"):
 
-        response = GetRest.get_config_restconf(username, password, device, request.form.get("module"), rest_call)
+        response = GetRest.get_config_restconf(username, password, device, port, request.form.get("module"), rest_call)
 
         return jsonify({'data': render_template('config.html', restconf=response[0], lists=response[1], json=response[2])})
 
     elif request.form.get("full_config"):
 
-        response = GetRest.get_config_restconf(username, password, device, module=request.form.get("full_config"), rest_obj=rest_call)
+        response = GetRest.get_config_restconf(username, password, device, port, module=request.form.get("full_config"), rest_obj=rest_call)
 
         return jsonify({'data': render_template('submitrestconf.html', response_code=response[0], object_list=response[3])})
 
@@ -140,7 +145,7 @@ def get_custom_config():
     else:
         query = request.form.get("query")
 
-    response = GetRest.get_config_restconf(username, password, device, module=query,
+    response = GetRest.get_config_restconf(username, password, device, port, module=query,
                                            rest_obj=rest_call)
     try:
         keys = response[2]
@@ -159,24 +164,24 @@ def submit_custom_leaf():
     """Submit requested configuration for proccessing"""
 
     if request.form.get("container"):
-        response = rest_call.request_container(username, password, device, request.form.get("container"))
+        response = rest_call.request_container(username, password, device, request.form.get("container"), port)
 
         return jsonify({'data': render_template('custom_config.html', object_list=response[0], lists=keys, container=response[2])})
 
     elif request.form.get("lists"):
 
-        response = rest_call.request_custom_lists(username, password, device, request.form.get("lists"))
+        response = rest_call.request_custom_lists(username, password, device, request.form.get("lists"), port)
 
         return jsonify({'data': render_template('query_submit_leaf.html', container=keys, object_list=response[0],
                                                 leafs=response[1], config=response[2])})
 
     elif request.form.get("module"):
-        response = GetRest.get_config_restconf(username, password, device, request.form.get("module"), rest_call)
+        response = GetRest.get_config_restconf(username, password, device, port, request.form.get("module"), rest_call)
 
         return jsonify({'data': render_template('config.html', restconf=response[0], lists=response[1], json=response[2])})
 
     elif request.form.get("full_config"):
-        response = GetRest.get_config_restconf(username, password, device, module=request.form.get("full_config"), rest_obj=rest_call)
+        response = GetRest.get_config_restconf(username, password, device, port, module=request.form.get("full_config"), rest_obj=rest_call)
 
         return jsonify({'data': render_template('submitrestconf.html', response_code=response[0], object_list=response[3])})
 
