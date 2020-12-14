@@ -64,10 +64,11 @@ If you dont have access to IOS-XE devices please use Devnet: https://developer.c
 
 **YANG Converter (This feature is not available when using Windows)**
 
-Notice when using windows:
+**Notice when using windows:**
 
 .. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/NotForWindows.PNG
 
++ The program gets your device capabilities and compares it to the local YANG model directory. If a match, you will be able to view the model via dropdown menu.
 + Convert YANG files to standard tree, Dynamic Tree, and YIN. Outputs will be displayed when the "View Model" button is clicked.
 
 **YANG Menu:**
