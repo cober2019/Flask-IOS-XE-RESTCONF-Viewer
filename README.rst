@@ -62,6 +62,29 @@ If you dont have access to IOS-XE devices please use Devnet: https://developer.c
 
 .. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/QuerySubmit.PNG
 
+**YANG Converter (This feature is not available when using Windows)**
+
+Notice when using windows:
+
+.. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/NotForWindows.PNG
+
++ Convert YANG files to standard tree, Dynamic Tree, and YIN. Outputs will be displayed when the "View Model" button is clicked.
+
+YANG Menu:
+
+.. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/PYANGMenu.PNG
+
+Standard Tree:
+
+.. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/Standard.PNG
+
+Dynamic Tree:
+
+.. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/Standard.PNG
+
+YIN:
+
+.. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/yin.PNG
 
 
 
