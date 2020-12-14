@@ -25,6 +25,8 @@ _________________
         + ietf-interfaces:interfaces-state
         + Custom Module allows you to enter ANY Module. Compatibility required for device
 
+**!!!Use Docker image(Ubuntu) instead of cloning to your own image. Fix in progress for file path issues!!!**
+
 **Docker Link:**
         - https://hub.docker.com/r/cober2019/ios_xe_restconf_viewer
 **Docker Commands:**
