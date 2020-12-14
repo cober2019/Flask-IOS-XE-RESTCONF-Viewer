@@ -72,7 +72,7 @@ If you dont have access to IOS-XE devices please use Devnet: https://developer.c
 
 + The program gets your device capabilities and compares it to the local YANG model directory. If a match, you will be able to view the model via dropdown menu.
 + Convert YANG files to standard tree, Dynamic Tree, and YIN. Outputs will be displayed when the "View Model" button is clicked.
-+ Not all YANG model will produce an output. Some may produce a stand tree but not dynamic
++ Not all YANG models will produce an output. Some may produce a standard tree but not dynamic tree.
 
 **YANG Menu:**
 
