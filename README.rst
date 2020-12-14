@@ -40,7 +40,7 @@ ___________
 **Outputs:**
 ____________
 
-**Devnet:** (Port Opton Currently Disabled)
+**Devnet:** (Port Optoon Currently Disabled)
 
 If you dont have access to IOS-XE devices please use Devnet: https://developer.cisco.com/site/standard-network-devices/ (Credenitals Provided In Sandbox)
     
@@ -70,19 +70,19 @@ Notice when using windows:
 
 + Convert YANG files to standard tree, Dynamic Tree, and YIN. Outputs will be displayed when the "View Model" button is clicked.
 
-YANG Menu:
+**YANG Menu:**
 
 .. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/PYANGMenu.PNG
 
-Standard Tree:
+**Standard Tree:**
 
 .. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/Standard.PNG
 
-Dynamic Tree:
+**Dynamic Tree:**
 
 .. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/Standard.PNG
 
-YIN:
+**YIN:**
 
 .. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/yin.PNG
 
