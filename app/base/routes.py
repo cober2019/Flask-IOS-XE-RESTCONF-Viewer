@@ -1,4 +1,4 @@
-# -*- encoding: utf-8 -*-
+ # -*- encoding: utf-8 -*-
 
 from flask import jsonify, render_template, redirect, request, url_for, flash
 from flask_login import (
@@ -13,12 +13,13 @@ from app.base.forms import LoginForm
 from app.base.models import User
 from app.base.util import verify_pass
 import app.Modules.ParseFuntion as GetRest
+import app.Modules.FileCommands as GetPyang
 import string
+import os
 
 device = None
 username = None
 password = None
-port = None
 rest_call = None
 keys = []
 
@@ -30,7 +31,7 @@ def route_default():
 
 @blueprint.route('/login', methods=['GET', 'POST'])
 def login():
-    global device, username, password, port
+    global device, username, password
 
     login_form = LoginForm(request.form)
     if 'login' in request.form:
@@ -38,11 +39,6 @@ def login():
         device = request.form['device']
         username = request.form['username']
         password = request.form['password']
-
-        if not request.form['port']:
-            port = 443
-        else:
-            port = request.form['port']
 
         if device and username and password:
             return redirect(url_for('base_blueprint.get_config', module='Cisco-IOS-XE-native:native'))
@@ -69,7 +65,7 @@ def get_config(module):
     global rest_call
 
     rest_call = GetRest.ApiCalls()
-    response = GetRest.get_config_restconf(username, password, device, port, module=module, rest_obj=rest_call)
+    response = GetRest.get_config_restconf(username, password, device, rest_obj=rest_call, module=module)
 
     if response == 'Access Denied':
         flash("Login Failed")
@@ -85,9 +81,9 @@ def get_config(module):
         return redirect(url_for('base_blueprint.login'))
     else:
         if response[0] == 404:
-            return render_template('config.html', restconf=response[0], json=response[1], lists=None)
+            return render_template('config.html', restconf=response[1], json=response[2], lists=None)
         else:
-            return render_template('config.html', restconf=response[0], lists=response[1], json=response[2],
+            return render_template('config.html', restconf=response[1], lists=response[2], json=response[3],
                                    module=module)
 
 
@@ -137,35 +133,25 @@ def get_custom_config():
 
     global keys
 
-    response = GetRest.get_config_restconf(username, password, device, module=request.form.get("query"),
+    # Replace query slashes to uri readable form
+    if '=' in request.form.get("query"):
+        find_slashes = request.form.get("query").split('=')[-1].replace('/', '%2f')
+        query = request.form.get("query").replace(request.form.get("query").split('=')[-1], find_slashes)
+    else:
+        query = request.form.get("query")
+
+    response = GetRest.get_config_restconf(username, password, device, module=query,
                                            rest_obj=rest_call)
-
     try:
-        keys = response[1]
+        keys = response[2]
     except (IndexError, TypeError):
-        keys = []
-
+        pass
     if response[0] == '404 Not Found' or response[0] == 404:
         return render_template('json_error.html', response='404 Not Found')
     elif response[0] == 204:
         return render_template('no_content.html', response='204 No Content')
     elif response[0] == 200:
-        # Returned OK response but couldn't decode JSON
-        return render_template('view_custom_query.html', json=response[2], lists=keys)
-
-    # Returned valid response and JSON conversion was sucessful
-    if request.form.get("query").rfind("/") == -1:
-        if keys[0] == 'error':
-            return render_template('json_error.html', response='404 Not Found')
-        else:
-            return redirect(url_for('base_blueprint.get_config', module=request.form.get("query")))
-    elif request.form.get("query").rfind("?") == -1:
-        if keys[0] == 'error':
-            return render_template('json_error.html', response='404 Not Found')
-        else:
-            return render_template('view_custom_query.html', json=response[2], lists=keys)
-    else:
-        return render_template('view_custom_query.html', json=response[2], lists=keys)
+        return render_template('view_custom_query.html', json=response[3], lists=keys, leafs=response[4])
 
 
 @blueprint.route('/query_submit_leaf', methods=['POST'])
@@ -173,7 +159,6 @@ def submit_custom_leaf():
     """Submit requested configuration for proccessing"""
 
     if request.form.get("container"):
-
         response = rest_call.request_container(username, password, device, request.form.get("container"))
 
         return jsonify({'data': render_template('custom_config.html', object_list=response[0], lists=keys, container=response[2])})
@@ -186,14 +171,44 @@ def submit_custom_leaf():
                                                 leafs=response[1], config=response[2])})
 
     elif request.form.get("module"):
-
         response = GetRest.get_config_restconf(username, password, device, request.form.get("module"), rest_call)
 
         return jsonify({'data': render_template('config.html', restconf=response[0], lists=response[1], json=response[2])})
 
     elif request.form.get("full_config"):
-
         response = GetRest.get_config_restconf(username, password, device, module=request.form.get("full_config"), rest_obj=rest_call)
 
         return jsonify({'data': render_template('submitrestconf.html', response_code=response[0], object_list=response[2])})
 
+
+@blueprint.route('/pyang_query')
+def pyang_query():
+    
+    if os.name != 'nt':
+        yangs = []
+        capabilities = GetRest.get_capabilities(username, password, device, rest_call)
+        pyang_data = GetPyang.get_yang()
+        for i in capabilities[1]:
+            for h in pyang_data:
+                if i == h:
+                    yangs.append(i)
+            
+        return render_template('pyang_query.html', yang_model=yangs)
+    else:
+        return render_template('not_compatible.html')
+
+
+
+@blueprint.route('/pyang_query', methods=['POST'])
+def present_pyang():
+    
+    if request.form.get('modelType') == 'standard':
+        get_model = GetPyang.get_standard_tree(request.form.get('model'))
+        return render_template('display_yang.html', tree=get_model)
+    elif request.form.get('modelType') == 'dynamic':
+        GetPyang.get_dynamic_tree(request.form.get('model'))
+        return render_template('jstree.html')
+    elif request.form.get('modelType') == 'yin':
+        yin = GetPyang.get_yin(request.form.get('model'))
+        return render_template('display_yang.html', tree=yin)
+    
