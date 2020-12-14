@@ -40,7 +40,7 @@ ___________
 **Outputs:**
 ____________
 
-**Devnet:**
+**Devnet:** (Port Opton Currently Disabled)
 
 If you dont have access to IOS-XE devices please use Devnet: https://developer.cisco.com/site/standard-network-devices/ (Credenitals Provided In Sandbox)
     
