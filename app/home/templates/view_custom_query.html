@@ -28,7 +28,7 @@
 
 {% block content %}
 
-{% if lists %}
+{% if lists and not leafs%}
 <div class="row">
   <div class="col-xl-12">
     <div class="row">
@@ -44,6 +44,46 @@
                             <span><input value="{{ i }}" class="btn btn-primary btn-round-xs" type="button" onclick="getContainer(this.value)"></span>
                           {% endfor %}
                       {%endif%}
+                      <div class="table-responsive">
+                        <span class="counter pull-right"></span>
+                        <table class="table align-items-center table-flush results" id="configTable">
+                          <tbody id="resttTable">
+                            <tr>
+                                <td>
+                                    <pre style="font-size: 15px">{{ json }}</pre>
+                                </td>
+                            </tr>
+                        </table>
+                      </div>
+                   </div>
+               </div>
+             </div>
+          </div>
+      </div>
+      <div class="col-xl-6">
+        <div class="card">
+            <div id='response' style="font-size: 15px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% elif lists and leafs%}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="row">
+      <div class="col-xl-6">
+          <div class="card">
+             <div class="card-header border-0">
+               <div class="row align-items-center">
+                   <div class="col">
+                        <h1 class="text-center">Configuration</h1>
+                            <br/>
+                      {% for i in leafs %}
+                        <span><input value="{{ i }}" class="btn btn-primary btn-round-xs" type="button" onclick="getContainer(this.value)"></span>
+                      {% endfor %}
                       <div class="table-responsive">
                         <span class="counter pull-right"></span>
                         <table class="table align-items-center table-flush results" id="configTable">
@@ -105,6 +145,7 @@
 </div>
 
 {%endif%}
+
 <script>
 
 function getContainer(val){
@@ -112,22 +153,6 @@ function getContainer(val){
   url: '/query_submit_leaf',
   type: 'POST',
   data: {'lists': val},
-  success: function(response) {
-      $('#response').html(response.data);
-  },
- });
-}
-
-
-</script>
-
-<script>
-
-function getModule(val){
- $.ajax({
-  url: '/custom_query',
-  type: 'POST',
-  data: {'full_config': val},
   success: function(response) {
       $('#response').html(response.data);
   },
