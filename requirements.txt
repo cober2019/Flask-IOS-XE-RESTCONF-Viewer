@@ -8,3 +8,5 @@ python-decouple
 gunicorn
 Jinja2~=2.11.2
 requests
+pyang
+
