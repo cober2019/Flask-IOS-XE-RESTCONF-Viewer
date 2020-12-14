@@ -119,7 +119,7 @@ def submit_leaf():
 
         response = GetRest.get_config_restconf(username, password, device, module=request.form.get("full_config"), rest_obj=rest_call)
 
-        return jsonify({'data': render_template('submitrestconf.html', response_code=response[0], object_list=response[2])})
+        return jsonify({'data': render_template('submitrestconf.html', response_code=response[0], object_list=response[3])})
 
 
 @blueprint.route('/custom_query')
@@ -178,7 +178,7 @@ def submit_custom_leaf():
     elif request.form.get("full_config"):
         response = GetRest.get_config_restconf(username, password, device, module=request.form.get("full_config"), rest_obj=rest_call)
 
-        return jsonify({'data': render_template('submitrestconf.html', response_code=response[0], object_list=response[2])})
+        return jsonify({'data': render_template('submitrestconf.html', response_code=response[0], object_list=response[3])})
 
 
 @blueprint.route('/pyang_query')
