@@ -1,0 +1,80 @@
+{% extends 'layouts/base.html' %}
+
+{% block title %} IOS-XE Viewer {% endblock title %}
+
+{% block stylesheets %}
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+{% endblock stylesheets %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col-xl-12">
+    <div class="card">
+      <div class="card-header border-0">
+        <div class="row align-items-center">
+          <div class="col ">
+            <h3 class="mb-0 text-center">YANG Viewer</h3>
+            <br/>
+          </div>
+        </div>
+        <form id="moduleForm" method="post">
+               <div class="form-group">
+                  <label class="font-weight-bold">YANG Models</label>
+                    <div class="input-group mb-3">
+                      <select class="custom-select" id="model" name="model">
+                        {% for model in yang_model %}
+                          <option value="{{model}}">{{model}}</option>>
+                        {% endfor %}
+                      </select>
+                    </div>
+               </div>
+			   <div class="form-group">
+                  <label class="font-weight-bold">Output Types</label>
+                    <div class="input-group mb-3">
+                      <select class="custom-select" id="modelType" name="modelType">
+						<option value="standard">Standard Tree</option>>
+						<option value="dynamic">Dynamic Tree</option>
+						<option value="yin">Yin</option>>
+                      </select>
+                    </div>
+               </div>
+            <br/>
+          <input value="View Model" type="submit" class="btn btn-primary" id="buildAdj">
+        </form>
+          <br/>
+          <br/>
+        <div id='response'></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $(document).ready(function(){
+    $('#moduleForm').submit(function(){
+	 document.getElementById('ospfRefreshOnly').value  = 'Loading..';
+     $.ajax({
+      url: '/pyang_query',
+      type: 'POST',
+      data: $('form').serialize(),
+      success: function(response){
+       $('#response').html(response.data);
+      },
+     });
+    });
+  });
+
+</script>
+
+ {% endblock content %}
+
+{% block javascripts %}
+
+
+{% endblock javascripts %}
