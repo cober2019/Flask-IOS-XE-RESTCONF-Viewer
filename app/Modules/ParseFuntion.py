@@ -24,12 +24,12 @@ def validate_json(response):
     except json.JSONDecodeError:
         return 'JSONError'
 
-def get_capabilities(username, password, device, rest_obj):
+def get_capabilities(username, password, device, port, rest_obj):
 
     modules = []
     response = None
     warnings.filterwarnings('ignore', message='Unverified HTTPS request')
-    uri = f"https://{device}/restconf/data/netconf-state/capabilities"
+    uri = f"https://{device}:{port}/restconf/data/netconf-state/capabilities"
     headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
 
     # Request config. If wrong IP or access-denied == value return Access Denied to caller
@@ -65,7 +65,7 @@ def get_capabilities(username, password, device, rest_obj):
         return response.status_code, modules, response.text
 
 
-def get_config_restconf(username, password, device, rest_obj, module='Module'):
+def get_config_restconf(username, password, device, port, rest_obj, module='Module'):
     """Requested Initial request for config via REST"""
 
     no_config = []
@@ -74,7 +74,7 @@ def get_config_restconf(username, password, device, rest_obj, module='Module'):
     rest_obj.module = module
 
     warnings.filterwarnings('ignore', message='Unverified HTTPS request')
-    uri = f"https://{device}/restconf/data/{module}"
+    uri = f"https://{device}:{port}/restconf/data/{module}"
     headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
 
     # Request config. If wrong IP or access-denied == value return Access Denied to caller
@@ -116,7 +116,7 @@ class ApiCalls:
         self.leaf = None
         self.config_keys = None
 
-    def request_container(self, username, password, device, container):
+    def request_container(self, username, password, device, container, port):
         """Get request leaf from config"""
 
         self.reset()
@@ -124,7 +124,7 @@ class ApiCalls:
         warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 
         # Build uri based of button click which provides the leaf value
-        uri = f"https://{device}/restconf/data/{self.module}/{self.container}"
+        uri = f"https://{device}:{port}/restconf/data/{self.module}/{self.container}"
         headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
 
@@ -143,7 +143,7 @@ class ApiCalls:
 
         return format_res, leafs, self.container
 
-    def request_lists(self, username, password, device, lists):
+    def request_lists(self, username, password, device, lists, port):
         """Get request leaf from config"""
 
         self.lists = lists
@@ -151,7 +151,7 @@ class ApiCalls:
         warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 
         # Build uri based of button click which provides the leaf value
-        uri = f"https://{device}/restconf/data/{self.module}/{self.container}/{self.lists}"
+        uri = f"https://{device}:{port}/restconf/data/{self.module}/{self.container}/{self.lists}"
         headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
         config = json.loads(response.text)
@@ -166,7 +166,7 @@ class ApiCalls:
 
         return format_res, leafs, self.config_keys
 
-    def request_custom_lists(self, username, password, device, lists):
+    def request_custom_lists(self, username, password, device, lists, port):
         """Get request leaf from config"""
 
         self.lists = lists
@@ -174,7 +174,7 @@ class ApiCalls:
         warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 
         # Build uri based of button click which provides the leaf value
-        uri = f"https://{device}/restconf/data/{self.module}/{self.lists}"
+        uri = f"https://{device}:{port}/restconf/data/{self.module}/{self.lists}"
         headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
         config = json.loads(response.text)
@@ -189,14 +189,14 @@ class ApiCalls:
 
         return format_res, leafs, self.config_keys
 
-    def request_leaf(self, username, password, device, leaf):
+    def request_leaf(self, username, password, device, leaf, port):
         """Get request leaf from config"""
 
         self.leaf = leaf
         warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 
         # Build uri based of button click which provides the leaf value
-        uri = f"https://{device}/restconf/data/{self.module}/{self.container}/{self.lists}/{self.leaf}"
+        uri = f"https://{device}:{port}/restconf/data/{self.module}/{self.container}/{self.lists}/{self.leaf}"
         headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
 
