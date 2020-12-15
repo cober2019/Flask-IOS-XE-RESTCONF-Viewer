@@ -70,6 +70,7 @@ def get_config_restconf(username, password, device, port, rest_obj, module='Modu
 
     no_config = []
     leafs = []
+    filler = []
     response = None
     rest_obj.module = module
 
@@ -102,7 +103,7 @@ def get_config_restconf(username, password, device, port, rest_obj, module='Modu
         # Sometime you can get 200 OK, but a decoder error
         no_config.append(response.status_code)
 
-        return response.status_code, leafs, response.text
+        return response.status_code, leafs, no_config, response.text, filler
 
 
 class ApiCalls:
