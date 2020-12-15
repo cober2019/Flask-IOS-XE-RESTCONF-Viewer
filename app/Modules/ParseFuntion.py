@@ -171,19 +171,26 @@ class ApiCalls:
 
         self.lists = lists
 
-        warnings.filterwarnings('ignore', message='Unverified HTTPS request')
+        # Used to replace slashes in xpath filters. Usually used for interfaces
+        if '/' in self._module and '/' in self.lists:
+            conversion = lists.replace('/', '%2f')
+            self.lists = self._module + '=' + conversion
+            uri = f"https://{device}:{port}/restconf/data/{self.lists}"
+        else:
+            # Build uri based of button click which provides the leaf value
+            uri = f"https://{device}:{port}/restconf/data/{self.module}/{self.lists}"
 
-        # Build uri based of button click which provides the leaf value
-        uri = f"https://{device}:{port}/restconf/data/{self.module}/{self.lists}"
         headers = {"Content-Type": 'application/yang-data+json', 'Accept': 'application/yang-data+json'}
         response = requests.get(uri, headers=headers, verify=False, auth=(username, password))
         config = json.loads(response.text)
+        get_keys = dict.fromkeys(json.loads(response.text))
+        parent_key = list(get_keys.keys())[0]
         format_res = json.dumps(response.json(), sort_keys=True, indent=4)
 
         try:
-            leafs = [k for k in config.get(f'{lists}').keys()]
+            leafs = [k for k in config.get(f'{parent_key}').keys()]
             self.config_keys = leafs
-        except AttributeError:
+        except AttributeError as error:
             leafs = ''
             self.config_keys = leafs
 
