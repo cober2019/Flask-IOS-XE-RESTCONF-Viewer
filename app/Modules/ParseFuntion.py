@@ -171,12 +171,13 @@ class ApiCalls:
         """Get request leaf from config"""
 
         self.lists = lists
-
         # Used to replace slashes in xpath filters. Usually used for interfaces
         if '/' in self._module and '/' in self.lists:
             conversion = lists.replace('/', '%2f')
             self.lists = self._module + '=' + conversion
             uri = f"https://{device}:{port}/restconf/data/{self.lists}"
+        elif '/' in self._module and '/' not in self.lists and '-' not in self.lists:
+            uri = f"https://{device}:{port}/restconf/data/{self.module}={self.lists}"
         else:
             # Build uri based of button click which provides the leaf value
             uri = f"https://{device}:{port}/restconf/data/{self.module}/{self.lists}"
