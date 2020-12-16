@@ -86,7 +86,7 @@ If you dont have access to IOS-XE devices please use Devnet: https://developer.c
 
 **Dynamic Tree:**
 
-.. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/Standard.PNG
+.. image:: https://github.com/cober2019/Flask-IOS-XE-RESTCONF-Viewer/blob/main/images/Dynamic.PNG
 
 **YIN:**
 
