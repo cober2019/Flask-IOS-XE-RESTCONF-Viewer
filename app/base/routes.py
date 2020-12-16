@@ -137,8 +137,14 @@ def get_custom_config():
     """Gets configuration via YANG model"""
 
     global keys
-    # Replace query slashes to uri readable form
-    if '=' in request.form.get("query"):
+    count_slashes = [char for char in request.form.get("query") if char == '/']
+
+    if '/' not in request.form.get("query"):
+        return redirect(url_for('base_blueprint.get_config', module=request.form.get("query")))
+    elif len(count_slashes) == 1 and request.form.get("query")[-1] not in string.ascii_letters:
+        strip_slash = request.form.get("query").replace('/', '')
+        return redirect(url_for('base_blueprint.get_config', module=strip_slash))
+    elif '=' in request.form.get("query"):
         find_slashes = request.form.get("query").split('=')[-1].replace('/', '%2f')
         query = request.form.get("query").replace(request.form.get("query").split('=')[-1], find_slashes)
     else:
