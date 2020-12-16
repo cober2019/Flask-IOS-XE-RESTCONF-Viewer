@@ -146,7 +146,7 @@ function getContainer(val){
  $.ajax({
   url: '/query_submit_leaf',
   type: 'POST',
-  data: {'lists': val},
+  data: {'depth_1': val},
   success: function(response) {
       $('#response').html(response.data);
   },
