@@ -137,7 +137,6 @@ def get_custom_config():
     """Gets configuration via YANG model"""
 
     global keys
-
     # Replace query slashes to uri readable form
     if '=' in request.form.get("query"):
         find_slashes = request.form.get("query").split('=')[-1].replace('/', '%2f')
@@ -145,46 +144,45 @@ def get_custom_config():
     else:
         query = request.form.get("query")
 
-    response = GetRest.get_config_restconf(username, password, device, port, module=query,
-                                           rest_obj=rest_call)
+    response = GetRest.get_config_restconf(username, password, device, port, rest_call, module=query)
+
     try:
         keys = response[2]
     except (IndexError, TypeError):
         pass
+
     if response[0] == '404 Not Found' or response[0] == 404:
         return render_template('json_error.html', response='404 Not Found')
     elif response[0] == 204:
         return render_template('no_content.html', response='204 No Content')
     elif response[0] == 200:
-        return render_template('view_custom_query.html', json=response[3], lists=keys, leafs=response[4])
+        return render_template('view_custom_query.html', json=response[3], lists=keys, leafs=response[2])
 
 
 @blueprint.route('/query_submit_leaf', methods=['POST'])
 def submit_custom_leaf():
     """Submit requested configuration for proccessing"""
 
-    if request.form.get("container"):
-        response = rest_call.request_container(username, password, device, request.form.get("container"), port)
+    if request.form.get("depth_1"):
+        response = rest_call.request_depth_one(username, password, device, request.form.get("depth_1"), port, rest_call)
 
-        return jsonify({'data': render_template('custom_config.html', object_list=response[0], lists=keys, container=response[2])})
+        return jsonify({'data': render_template('depth_one.html', container=keys, object_list=response[3],
+                                                leafs=response[2], config=response[3])})
 
-    elif request.form.get("lists"):
+    elif request.form.get("depth_2"):
+        response = rest_call.request_depth_two(username, password, device, request.form.get("depth_2"), port, rest_call)
 
-        response = rest_call.request_custom_lists(username, password, device, request.form.get("lists"), port)
+        return jsonify({'data': render_template('depth_two.html', leafs=response[2], config=response[3])})
 
-        return jsonify({'data': render_template('query_submit_leaf.html', container=keys, object_list=response[0],
-                                                leafs=response[1], config=response[2])})
+    elif request.form.get("depth_3"):
+        response = rest_call.request_depth_three(username, password, device, request.form.get("depth_3"), port, rest_call)
 
-    elif request.form.get("module"):
-        response = GetRest.get_config_restconf(username, password, device, port, request.form.get("module"), rest_call)
+        return jsonify({'data': render_template('depth_three.html',  config=response[3])})
 
-        return jsonify({'data': render_template('config.html', restconf=response[0], lists=response[1], json=response[2])})
+    elif request.form.get("depth_4"):
+        response = rest_call.request_depth_four(username, password, device, request.form.get("depth_4"), port, rest_call)
 
-    elif request.form.get("full_config"):
-        response = GetRest.get_config_restconf(username, password, device, port, module=request.form.get("full_config"), rest_obj=rest_call)
-
-        return jsonify({'data': render_template('submitrestconf.html', response_code=response[0], object_list=response[3])})
-
+        return jsonify({'data': render_template('depth_four.html', config=response[3])})
 
 @blueprint.route('/pyang_query')
 def pyang_query():
