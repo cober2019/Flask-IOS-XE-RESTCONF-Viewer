@@ -1,0 +1,53 @@
+{% if leafs and leafs|length < 1%}
+
+<br/>
+<h1 class="text-center">Configuration: </h1>
+<div class="table-responsive">
+<span class="counter pull-right"></span>
+  <div class="col">
+      {% for i in leafs %}
+         <span><input value="{{ i }}" class="btn btn-primary btn-round-xs" type="button" onclick="getLeaf(this.value)"></span>
+      {% endfor %}
+    <br/>
+    <table class="table align-items-center table-flush results">
+      <tbody>
+        <tr>
+            <td>
+                <pre style="font-size: 15px">{{ config }}</pre>
+            </td>
+        </tr>
+    </table>
+  </div>
+</div>
+
+{% else %}
+
+  <br/>
+  <h1 class="text-center">Configuration: </h1>
+  <div class="table-responsive">
+    <span class="counter pull-right"></span>
+    <table class="table align-items-center table-flush results">
+      <tbody>
+        <tr>
+            <td>
+                <pre style="font-size: 15px">{{ config }}</pre>
+            </td>
+        </tr>
+    </table>
+  </div>
+
+{% endif %}
+<script>
+
+    function getLeaf(val){
+      $.ajax({
+      url: '/query_submit_leaf',
+      type: 'POST',
+      data: {'depth_3': val},
+      success: function(response){
+       $('#response').html(response.data);
+      },
+     });
+    }
+
+</script>
