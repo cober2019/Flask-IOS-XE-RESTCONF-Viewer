@@ -5,6 +5,8 @@
     :target: -
 .. image:: https://img.shields.io/badge/Fugi_IOS_XE_v16.07.02-passing-green
     :target: -
+.. image:: https://img.shields.io/badge/DevnetSandbox-IOS-XE-passing-green
+    :target: -
 .. image:: https://img.shields.io/badge/RESTCONF-required-blue
     :target: -
 .. image:: https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg
