@@ -195,7 +195,7 @@ def pyang_query():
     
     if os.name != 'nt':
         yangs = []
-        capabilities = GetRest.get_capabilities(username, password, device, rest_call)
+        capabilities = GetRest.get_capabilities(username, password, device, port, rest_obj=rest_call)
         pyang_data = GetPyang.get_yang()
         for i in capabilities[1]:
             for h in pyang_data:
