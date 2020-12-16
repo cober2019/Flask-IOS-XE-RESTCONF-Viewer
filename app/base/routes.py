@@ -86,7 +86,7 @@ def get_config(module):
         return redirect(url_for('base_blueprint.login'))
     else:
         if response[0] == 404:
-            return render_template('config.html', restconf=response[1], json=response[2], lists=None)
+            return render_template('page-404.html')
         else:
             return render_template('config.html', restconf=response[1], lists=response[2], json=response[3],
                                    module=module)
