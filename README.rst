@@ -32,8 +32,8 @@ _________________
 **Docker Link:**
         - https://hub.docker.com/r/cober2019/ios_xe_restconf_viewer
 **Docker Commands:**
-        - docker pull cober2019/ios_xe_restconf_viewer
-        - docker run -p 5000:5000  -d cober2019/ios_xe_restconf_viewer:v1.0
+        - docker pull cober2019/ios_xe_restconf_viewer:latest
+        - docker run -p 5000:5000  -d cober2019/ios_xe_restconf_viewer:latest
         
 **Usage:**
 ___________
